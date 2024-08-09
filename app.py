@@ -46,7 +46,7 @@ def detect_tampering(original_img, test_img):
 st.title("PAN Card Tampering Detection")
 
 # Load the original image (stored in your GitHub repository or locally)
-original_img_path = 'path/to/original/pan_card_image.jpg'
+original_img_path = 'https://github.com/YuvaAvuy/pan_card_original/blob/main/pan%201.jpg'
 original_img = cv2.imread(original_img_path)
 
 # Upload the test image
