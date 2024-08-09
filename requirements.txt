@@ -1,7 +1,6 @@
-pip install --upgrade pip
-streamlit==1.25.0
-opencv-python-headless==4.8.0.74
-pytesseract==0.3.10
-matplotlib==3.7.2
-Pillow==9.5.0
-requests==2.31.0
+streamlit==1.26.0  # Ensure to use the latest stable version
+opencv-python-headless==4.8.0.74  # OpenCV without GUI dependencies
+numpy==1.25.2  # For numerical operations
+pytesseract==0.3.10  # For OCR processing
+Pillow==10.0.1  # Image processing (PIL)
+matplotlib==3.8.0  # For plotting images
