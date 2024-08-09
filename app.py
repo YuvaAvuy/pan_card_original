@@ -80,7 +80,7 @@ def analyze_card(original_img, test_img):
 st.title("PAN Card Tampering Detection")
 
 # URL of the original image stored in GitHub
-github_url = "https://github.com/yourusername/repositoryname/raw/branchname/original.jpg"
+github_url = "https://github.com/YuvaAvuy/pan_card_original/blob/main/1.jpg"
 
 # Load the original PAN card image
 original_img = load_original_image_from_github(github_url)
