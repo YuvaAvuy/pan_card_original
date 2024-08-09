@@ -1,0 +1,34 @@
+name: Deploy Streamlit App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y python3-distutils
+
+    - name: Install Python dependencies
+      run: |
+        pip install --upgrade pip
+        pip install --upgrade setuptools wheel
+        pip install -r requirements.txt
+
+    - name: Run Streamlit App
+      run: |
+        streamlit run app.py
