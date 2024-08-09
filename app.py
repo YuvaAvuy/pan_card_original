@@ -2,15 +2,8 @@ import cv2
 import numpy as np
 import pytesseract
 import streamlit as st
-import matplotlib.pyplot as plt
 from PIL import Image
-import requests
-
-# Function to load the original image from GitHub
-def load_original_image_from_github(url):
-    response = requests.get(url)
-    img = Image.open(response.content)
-    return np.array(img)
+import matplotlib.pyplot as plt
 
 # Function to detect if the given card is a PAN card
 def is_pan_card(image):
@@ -49,51 +42,43 @@ def detect_tampering(original_img, test_img):
 
     return tampered_percentage, thresh_img
 
-# Function to analyze the card
-def analyze_card(original_img, test_img):
-    # Check if the test image is a PAN card
-    if not is_pan_card(test_img):
-        return "The provided image is not a PAN card."
-
-    # Detect tampering and calculate percentage
-    tampered_percentage, tampered_img = detect_tampering(original_img, test_img)
-
-    # Draw contours on the tampered image for visualization
-    contours, _ = cv2.findContours(tampered_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    test_img_contours = test_img.copy()
-    cv2.drawContours(test_img_contours, contours, -1, (0, 255, 0), 2)
-
-    # Display the images and tampering result
-    st.image([cv2.cvtColor(original_img, cv2.COLOR_BGR2RGB), 
-              cv2.cvtColor(test_img, cv2.COLOR_BGR2RGB), 
-              cv2.cvtColor(test_img_contours, cv2.COLOR_BGR2RGB)], 
-              caption=["Original PAN Card", "Test PAN Card", "Detected Tampering"], 
-              width=300)
-
-    # Return the tampering analysis result
-    if tampered_percentage > 0:
-        return f"The provided PAN card is tampered with {tampered_percentage:.2f}% of its area."
-    else:
-        return "The provided PAN card is not tampered."
-
-# Streamlit UI
+# Streamlit App
 st.title("PAN Card Tampering Detection")
 
-# URL of the original image stored in GitHub
-github_url = "https://github.com/YuvaAvuy/pan_card_original/blob/main/1.jpg"
+# Load the original image (stored in your GitHub repository or locally)
+original_img_path = 'path/to/original/pan_card_image.jpg'
+original_img = cv2.imread(original_img_path)
 
-# Load the original PAN card image
-original_img = load_original_image_from_github(github_url)
+# Upload the test image
+uploaded_file = st.file_uploader("Upload the test PAN card image", type=["jpg", "jpeg", "png"])
 
-# Upload test image
-uploaded_test_img = st.file_uploader("Upload Test PAN Card Image", type=["jpg", "jpeg", "png"])
+if uploaded_file is not None:
+    # Convert the uploaded file to an OpenCV image
+    test_img = Image.open(uploaded_file)
+    test_img = np.array(test_img)
 
-if uploaded_test_img is not None:
-    # Convert uploaded image to OpenCV format
-    test_img = np.array(Image.open(uploaded_test_img))
+    # Check if the test image is a PAN card
+    if not is_pan_card(test_img):
+        st.error("The provided image is not a PAN card.")
+    else:
+        # Detect tampering and calculate percentage
+        tampered_percentage, tampered_img = detect_tampering(original_img, test_img)
 
-    # Analyze the card
-    result = analyze_card(original_img, test_img)
+        # Draw contours on the tampered image for visualization
+        contours, _ = cv2.findContours(tampered_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        test_img_contours = test_img.copy()
+        cv2.drawContours(test_img_contours, contours, -1, (0, 255, 0), 2)
 
-    # Display the result
-    st.write(result)
+        # Display the images
+        st.image([cv2.cvtColor(original_img, cv2.COLOR_BGR2RGB),
+                  cv2.cvtColor(test_img, cv2.COLOR_BGR2RGB),
+                  cv2.cvtColor(test_img_contours, cv2.COLOR_BGR2RGB)],
+                 caption=["Original PAN Card", "Test PAN Card", "Detected Tampering"],
+                 use_column_width=True)
+
+        # Display the tampering analysis result
+        if tampered_percentage > 0:
+            st.warning(f"The provided PAN card is tampered with {tampered_percentage:.2f}% of its area.")
+        else:
+            st.success("The provided PAN card is not tampered.")
+
